@@ -1,0 +1,22 @@
+# dune exec ./bin/main.exe
+# OCAMLPARAM: unset
+# Shared cache: disabled
+# Shared cache location: /Users/alex/.cache/dune/db
+# Workspace root: /Users/alex/Desktop/ocaml-dataflow
+# Auto-detected concurrency: 8
+# Dune context:
+#  { name = "default"
+#  ; kind = "default"
+#  ; profile = Dev
+#  ; merlin = true
+#  ; fdo_target_exe = None
+#  ; build_dir = In_build_dir "default"
+#  ; installed_env =
+#      map
+#        { "INSIDE_DUNE" : "/Users/alex/Desktop/ocaml-dataflow/_build/default"
+#        ; "OCAML_COLOR" : "always"
+#        ; "OPAMCOLOR" : "always"
+#        }
+#  ; instrument_with = []
+#  }
+$ /Users/alex/.opam/pl/bin/ocamlc.opt -config > /var/folders/tr/7r4dsy710q956y2zxdlzgvcr0000gn/T/dune_b78cfc_output

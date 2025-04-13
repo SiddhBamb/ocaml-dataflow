@@ -1,0 +1,1 @@
+install dune and ocaml. to run, do ``dune build`` at the root level, and do ``dune exec ./bin/main.exe`` or whatever the file you wanna execute is, usually main tho
