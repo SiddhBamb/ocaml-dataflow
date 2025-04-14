@@ -1,3 +1,4 @@
 (library
  (name dataflow)
- (modules dataflow))
+ (modules dataflow)
+ (libraries core))
