@@ -1,0 +1,53 @@
+{
+    "job_name": "word_count_mapreduce",
+    "nodes": [
+      {
+        "id": "input_reader",
+        "type": "FileIO",
+        "config": {
+          "path": "./data/input.txt",
+          "mode": "read",
+          "threads": 1
+        }
+      },
+      {
+        "id": "mapper",
+        "type": "Computation",
+        "config": {
+          "function_name": "map_word_count",
+          "threads": 8
+        }
+      },
+      {
+        "id": "reducer",
+        "type": "Computation",
+        "config": {
+          "function_name": "reduce_word_count",
+          "threads": 8
+        }
+      },
+      {
+        "id": "output_writer",
+        "type": "FileIO",
+        "config": {
+          "path": "./data/output.txt",
+          "mode": "write",
+          "threads": 1
+        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "input_reader",
+        "to": "mapper"
+      },
+      {
+        "from": "mapper",
+        "to": "reducer"
+      },
+      {
+        "from": "reducer",
+        "to": "output_writer"
+      }
+    ]
+  }

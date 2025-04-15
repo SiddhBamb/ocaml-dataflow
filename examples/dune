@@ -1,4 +1,4 @@
 (executable
     (name wordcount)
     (modules wordcount)
-    (libraries dataflow core)) 
+    (libraries dataflow)) 
