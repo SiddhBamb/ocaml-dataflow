@@ -1,0 +1,3 @@
+Stage: name --> task, dependencies (list of stage names)
+Functions stored as name --> function pointer in the actual code, names must match stage definition
+
