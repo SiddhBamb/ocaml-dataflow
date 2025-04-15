@@ -1,3 +1,31 @@
+type node_type =
+  | FileIO
+  | Computation
+
+type node_config = {
+  path : string option;
+  mode : string option;
+  function_name : string option;
+  threads : int;
+}
+
+type node = {
+  id : string;
+  ntype : node_type;
+  config : node_config;
+}
+
+type edge = {
+  from_id : string;
+  to_id : string;
+}
+
+type graph = {
+  job_name : string;
+  nodes : node list;
+  edges : edge list;
+}
+
 (* kahn's algo impl for topo sort *)
 (* extract stage-level parallelism from dag *)
 let topological_sort graph =
@@ -36,3 +64,6 @@ let topological_sort graph =
     if List.length !sorted <> List.length graph.nodes then
         failwith "Cycle detected or graph is not a DAG"
     else List.rev !sorted
+
+
+
