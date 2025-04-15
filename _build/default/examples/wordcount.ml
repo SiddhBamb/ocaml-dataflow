@@ -1,18 +1,12 @@
-open Dataflow
+module StringMapReduce = Dataflowlib.Dataflow.MakeMapReduce(String)
 
-module StringMapReduce = MakeMapReduce(String)
-
-(* read data from data/wordcountdata.txt *) 
 let file_content = 
   let ch = open_in "data/wordcountdata.txt" in
   let s = really_input_string ch (in_channel_length ch) in
   close_in ch;
   s
 
-(* split data into lines *) 
 let lines = String.split_on_char '\n' file_content
-
-(* split lines, which is a list of strings, into a list of list of words *)
 let words = List.map (fun line -> String.split_on_char ' ' line) lines
 
 let map (chunk: string list) : int StringMapReduce.KMap.t = 
@@ -27,4 +21,8 @@ let () =
     let result = StringMapReduce.run words ~map_func:map ~reduce_func:reduce in
     let print_binding (k, v) = Printf.sprintf "%s: %d" k v in
     let bindings_str = List.map print_binding (StringMapReduce.KMap.bindings result) in
-    print_endline (String.concat "\n" bindings_str)
+    print_endline (String.concat "\n" bindings_str); 
+    let json_obj = Dataflowlib.Jsonparser.parse_json_file "examples/wordcount.json" in
+    print_endline (Yojson.Basic.to_string json_obj);
+    (* If you want pretty printing: print_endline (Yojson.Basic.pretty_to_string json_obj); *)
+    ()

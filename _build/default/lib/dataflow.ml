@@ -1,6 +1,6 @@
 (* like template in c++, we can make mapreduce for any key type *)
 module MakeMapReduce (Key : Map.OrderedType) = struct
-    module KMap = Map.Make(Key) (* Use the provided Key *)
+    module KMap = Map.Make(Key)
 
     type 'a input_chunk = 'a list
 

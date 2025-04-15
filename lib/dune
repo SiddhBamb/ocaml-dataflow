@@ -1,4 +1,4 @@
 (library
- (name dataflow)
- (modules dataflow)
- (libraries core))
+ (name dataflowlib)
+ (modules dataflow jsonparser)
+ (libraries yojson))
