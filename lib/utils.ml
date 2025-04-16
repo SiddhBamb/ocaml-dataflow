@@ -28,44 +28,43 @@ type graph = {
 
 (* kahn's algo impl for topo sort *)
 (* extract stage-level parallelism from dag *)
-(*
 let topological_sort graph =
-    (* set up indegree and node id maps *)
-    let node_map = Hashtbl.create 10 in
-    List.iter (fun node -> Hashtbl.add node_map node.id node) graph.nodes;
-    let in_degree = Hashtbl.create 10 in
-    List.iter (fun node -> Hashtbl.add in_degree node.id 0) graph.nodes;
-    List.iter (fun { from_id; to_id } ->
-        let count = Hashtbl.find in_degree to_id in
-        Hashtbl.replace in_degree to_id (count + 1)
-    ) graph.edges;
+  (* set up indegree and node id maps *)
+  let node_map = Hashtbl.create 10 in
+  List.iter (fun node -> Hashtbl.add node_map node.id node) graph.nodes;
+  let in_degree = Hashtbl.create 10 in
+  List.iter (fun node -> Hashtbl.add in_degree node.id 0) graph.nodes;
+  let adj_list = Hashtbl.create 10 in
+  List.iter (fun node -> Hashtbl.add adj_list node.id []) graph.nodes;
+  List.iter (fun edge ->
+    let count = Hashtbl.find in_degree edge.to_id in
+    Hashtbl.replace in_degree edge.to_id (count + 1);
+    Hashtbl.add adj_list edge.from_id (edge.to_id :: Hashtbl.find adj_list edge.from_id)
+  ) graph.edges;
 
-    (* process nodes with 0 indegree first *)
-    let queue = Queue.create () in
-    Hashtbl.iter (fun id deg ->
-        if deg = 0 then Queue.add id queue
-    ) in_degree;
+  (* process nodes with 0 indegree first *)
+  let queue = Queue.create () in
+  Hashtbl.iter (fun id deg ->
+    if deg = 0 then Queue.add id queue
+  ) in_degree;
 
-    (* topological sort *)
-    let sorted = ref [] in
-    while not (Queue.is_empty queue) do
-        let id = Queue.take queue in
-        sorted := id :: !sorted;
-        (* decrement indegree when processing dependency, add to queue if it hits 0 *)
-        List.iter (fun { from_id; to_id } ->
-            if from_id = id then (
-                let deg = Hashtbl.find in_degree to_id in
-                let deg' = deg - 1 in
-                Hashtbl.replace in_degree to_id deg';
-                if deg' = 0 then Queue.add to_id queue
-            )
-        ) graph.edges
-    done;
-    (* if not all nodes were processed, there's a cycle, can't proceed *)
-    if List.length !sorted <> List.length graph.nodes then
-        failwith "Cycle detected or graph is not a DAG"
-    else List.rev !sorted
-*)
+  (* topological sort *)
+  let sorted = ref [] in
+  while not (Queue.is_empty queue) do
+    let id = Queue.take queue in
+    sorted := id :: !sorted;
+    (* decrement indegree when processing dependency, add to queue if it hits 0 *)
+    List.iter (fun to_id ->
+      let deg = Hashtbl.find in_degree to_id in
+      let deg' = deg - 1 in
+      Hashtbl.replace in_degree to_id deg';
+      if deg' = 0 then Queue.add to_id queue
+    ) (Hashtbl.find adj_list id)
+  done;
+  (* if not all nodes were processed, there's a cycle, can't proceed *)
+  if List.length !sorted <> List.length graph.nodes then
+    failwith "Cycle detected or graph is not a DAG"
+  else List.rev !sorted
 
 (* Helper function to convert node_type to string *)
 let node_type_to_string = function
