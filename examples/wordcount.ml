@@ -12,7 +12,13 @@ let words = List.map (fun line -> String.split_on_char ' ' line) lines
 
 let map (chunk : string list) : int StringMapReduce.KMap.t =
   List.fold_left
-    (fun acc line -> StringMapReduce.KMap.add line 1 acc)
+    (fun acc_map word ->
+       let current_count =
+         match StringMapReduce.KMap.find_opt word acc_map with
+         | None -> 0
+         | Some count -> count
+       in
+       StringMapReduce.KMap.add word (current_count + 1) acc_map)
     StringMapReduce.KMap.empty
     chunk
 ;;
