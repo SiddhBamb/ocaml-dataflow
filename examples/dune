@@ -7,3 +7,13 @@
  (name wordcountjson)
  (modules wordcountjson)
  (libraries dataflowlib))
+
+(executable
+ (name wordcount_parallel)
+ (modules wordcount_parallel)
+ (libraries dataflowlib))
+
+(executable
+ (name wordcount_benchmark)
+ (modules wordcount_benchmark)
+ (libraries dataflowlib))
