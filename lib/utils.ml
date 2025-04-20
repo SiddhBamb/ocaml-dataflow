@@ -26,31 +26,32 @@ type graph =
   ; edges : edge list
   }
 
-(* kahn's algo impl for topo sort *)
-(* extract stage-level parallelism from dag *)
-let topological_sort graph =
-  (* set up indegree and node id maps *)
-  let node_map = Hashtbl.create 10 in
-  List.iter (fun node -> Hashtbl.add node_map node.id node) graph.nodes;
+(** Performs topological sort on the graph.
+    Returns Ok of node ID list in topological order,
+    or Error "Cycle detected" if the graph is not a DAG. *)
+let topological_sort graph : (string list, string) result =
+  (* Map storing indegrees *)
   let in_degree = Hashtbl.create 10 in
   List.iter (fun node -> Hashtbl.add in_degree node.id 0) graph.nodes;
+  (* Map storing adjacency lists *)
   let adj_list = Hashtbl.create 10 in
   List.iter (fun node -> Hashtbl.add adj_list node.id []) graph.nodes;
+  (* Count indegrees *)
   List.iter
     (fun edge ->
        let count = Hashtbl.find in_degree edge.to_id in
        Hashtbl.replace in_degree edge.to_id (count + 1);
        Hashtbl.add adj_list edge.from_id (edge.to_id :: Hashtbl.find adj_list edge.from_id))
     graph.edges;
-  (* process nodes with 0 indegree first *)
+  (* Process nodes with 0 indegree first *)
   let queue = Queue.create () in
   Hashtbl.iter (fun id deg -> if deg = 0 then Queue.add id queue) in_degree;
-  (* topological sort *)
+  (* Topological sort *)
   let sorted = ref [] in
   while not (Queue.is_empty queue) do
     let id = Queue.take queue in
     sorted := id :: !sorted;
-    (* decrement indegree when processing dependency, add to queue if it hits 0 *)
+    (* Decrement indegree when processing dependency, add to queue if it hits 0 *)
     List.iter
       (fun to_id ->
          let deg = Hashtbl.find in_degree to_id in
@@ -59,25 +60,25 @@ let topological_sort graph =
          if deg' = 0 then Queue.add to_id queue)
       (Hashtbl.find adj_list id)
   done;
-  (* if not all nodes were processed, there's a cycle, can't proceed *)
+  (* Check for cycle *)
   if List.length !sorted <> List.length graph.nodes
-  then failwith "Cycle detected or graph is not a DAG"
-  else List.rev !sorted
+  then Error "Not a DAG"
+  else Ok (List.rev !sorted)
 ;;
 
-(* Helper function to convert node_type to string *)
+(* Helper function to convert node_type to string. *)
 let node_type_to_string = function
   | FileIO -> "FileIO"
   | Computation -> "Computation"
 ;;
 
-(* Helper function to print option types cleanly *)
+(* Helper function to print option types cleanly. *)
 let print_option printer = function
   | Some v -> printer v
   | None -> print_string "None"
 ;;
 
-(* Function to print the graph details *)
+(* Function to print the graph details. *)
 let print_graph graph =
   Printf.printf "Job Name: %s\n" graph.job_name;
   print_endline "Nodes:";

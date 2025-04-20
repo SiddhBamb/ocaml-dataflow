@@ -8,7 +8,7 @@ let file_content =
 ;;
 
 let lines = String.split_on_char '\n' file_content
-let words = List.map (fun line -> String.split_on_char ' ' line) lines
+let words_list_list = List.map (fun line -> String.split_on_char ' ' line) lines
 
 let map (chunk : string list) : int StringMapReduce.KMap.t =
   List.fold_left
@@ -26,7 +26,7 @@ let map (chunk : string list) : int StringMapReduce.KMap.t =
 let reduce (_ : string) (values : int list) : int = List.fold_left ( + ) 0 values
 
 let () =
-  let result = StringMapReduce.run words ~map_func:map ~reduce_func:reduce in
+  let result = StringMapReduce.run words_list_list ~map_func:map ~reduce_func:reduce in
   let print_binding (k, v) = Printf.sprintf "%s: %d" k v in
   let bindings_str = List.map print_binding (StringMapReduce.KMap.bindings result) in
   print_endline (String.concat "\n" bindings_str)
