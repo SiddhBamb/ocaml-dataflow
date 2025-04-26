@@ -29,8 +29,10 @@ type graph =
 (** Performs topological sort on the graph.
     Returns Ok of node ID list in topological order,
     or Error "Cycle detected" if the graph is not a DAG. *)
-let topological_sort graph : (string list, string) result =
+let topological_sort graph =
   (* Map storing indegrees *)
+  let node_map = Hashtbl.create 10 in
+  List.iter (fun node -> Hashtbl.add node_map node.id node) graph.nodes;
   let in_degree = Hashtbl.create 10 in
   List.iter (fun node -> Hashtbl.add in_degree node.id 0) graph.nodes;
   (* Map storing adjacency lists *)
