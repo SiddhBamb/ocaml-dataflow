@@ -1,9 +1,19 @@
 (executable
-    (name wordcount)
-    (modules wordcount)
-    (libraries dataflowlib)) 
+ (name wordcount)
+ (modules wordcount)
+ (libraries dataflowlib))
 
 (executable
-    (name wordcountjson)
-    (modules wordcountjson)
-    (libraries dataflowlib))
+ (name wordcountjson)
+ (modules wordcountjson)
+ (libraries dataflowlib))
+
+(executable
+ (name wordcount_parallel)
+ (modules wordcount_parallel)
+ (libraries dataflowlib))
+
+(executable
+ (name wordcount_benchmark)
+ (modules wordcount_benchmark)
+ (libraries dataflowlib))
