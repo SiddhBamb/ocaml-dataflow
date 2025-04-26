@@ -155,8 +155,7 @@ end
 
 (* 
 module ConcurrentHashMap = struct
-  (* BEGIN READ-WRITE LOCK IMPLEMENTATION **)
-
+  (* --- Readers–Writer Lock --- *)
   module Rw_lock = struct
     type t = {
       mutex   : Mutex.t;
@@ -173,9 +172,7 @@ module ConcurrentHashMap = struct
 
     let read_lock l =
       Mutex.lock l.mutex;
-      while l.writer do
-        Condition.wait l.cond l.mutex
-      done;
+      while l.writer do Condition.wait l.cond l.mutex done;
       l.readers <- l.readers + 1;
       Mutex.unlock l.mutex
 
@@ -187,9 +184,7 @@ module ConcurrentHashMap = struct
 
     let write_lock l =
       Mutex.lock l.mutex;
-      while l.writer || l.readers > 0 do
-        Condition.wait l.cond l.mutex
-      done;
+      while l.writer || l.readers > 0 do Condition.wait l.cond l.mutex done;
       l.writer <- true;
       Mutex.unlock l.mutex
 
@@ -220,7 +215,7 @@ module ConcurrentHashMap = struct
       capacity = 16;
       rwlock   = Rw_lock.create () }
 
-  (* resize, assume global write lock held *)
+  (* resize, assuming write-lock held *)
   let resize_body map =
     let new_capacity = map.capacity * 2 in
     let new_table = Hashtbl.create new_capacity in
@@ -246,6 +241,7 @@ module ConcurrentHashMap = struct
     resize_body map;
     Rw_lock.write_unlock map.rwlock
 
+  (* insert value into list for key *)
   let insert map key value =
     (* read locking until we need map-wide change *)
     Rw_lock.read_lock map.rwlock;
@@ -262,8 +258,8 @@ module ConcurrentHashMap = struct
     (* now look at buckets and actually insert *)
     let idx = Hashtbl.hash key mod map.capacity in
     let bucket =
-      try Hashtbl.find map.table idx
-      with Not_found ->
+      try Hashtbl.find map.table idx with
+      | Not_found ->
         (* if making new bucket need exclusive lock on map *)
         Rw_lock.read_unlock map.rwlock;
         Rw_lock.write_lock map.rwlock;
@@ -278,9 +274,9 @@ module ConcurrentHashMap = struct
     bucket.values <- value :: bucket.values;
     map.size <- map.size + 1;
     Mutex.unlock bucket.mutex;
-
     (* release all locks *)
     Rw_lock.read_unlock map.rwlock
+  ;;
 
   let read map key =
     Rw_lock.read_lock map.rwlock;
@@ -292,10 +288,12 @@ module ConcurrentHashMap = struct
         let vs = List.rev bucket.values in
         Mutex.unlock bucket.mutex;
         Some vs
-      with Not_found -> None
+      with
+      | Not_found -> None
     in
     Rw_lock.read_unlock map.rwlock;
     res
+  ;;
 
   let delete map key =
     Rw_lock.read_lock map.rwlock;
@@ -308,11 +306,14 @@ module ConcurrentHashMap = struct
        Mutex.unlock bucket.mutex
      | None -> ());
     Rw_lock.read_unlock map.rwlock
+  ;;
 
   let clear map =
     Rw_lock.write_lock map.rwlock;
     Hashtbl.clear map.table;
-    map.size     <- 0;
+    map.size <- 0;
     map.capacity <- 16;
     Rw_lock.write_unlock map.rwlock
+  ;;
+end
 end *)
