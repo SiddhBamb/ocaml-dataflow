@@ -1,6 +1,5 @@
 (*
-
-let map_word_count (input : Dataflowlib.Utils.generic_type) : Dataflowlib.Utils.generic_type =
+   let map_word_count (input : Dataflowlib.Utils.generic_type) : Dataflowlib.Utils.generic_type =
     let input_strings = match input with 
     | Dataflowlib.Utils.StringList sl -> sl
     | _ -> failwith "Input is not a string list"
@@ -19,9 +18,9 @@ let map_word_count (input : Dataflowlib.Utils.generic_type) : Dataflowlib.Utils.
     ) word_counts [] in
 
     Dataflowlib.Utils.StringIntList word_counts_list
-
 *)
 
-let () = 
-    let graph = Dataflowlib.Jsonparser.json_to_graph "examples/example_cfg.json" in
-    Dataflowlib.Utils.print_graph graph
+let () =
+  let graph = Dataflowlib.Jsonparser.json_to_graph "examples/example_cfg.json" in
+  Dataflowlib.Utils.print_graph graph
+;;
