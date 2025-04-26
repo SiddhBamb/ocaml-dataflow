@@ -64,7 +64,9 @@ let topological_sort graph =
   (* if not all nodes were processed, there's a cycle, can't proceed *)
   if List.length !sorted <> List.length graph.nodes then
     failwith "Cycle detected or graph is not a DAG"
-  else List.rev !sorted
+  else 
+    let sorted_nodes = List.map (fun id -> Hashtbl.find node_map id) !sorted in
+    List.rev sorted_nodes
 
 (* Helper function to convert node_type to string *)
 let node_type_to_string = function
@@ -94,5 +96,43 @@ let print_graph graph =
     Printf.printf "  %s -> %s\n" edge.from_id edge.to_id
   ) graph.edges
 
+(* the potential output types from different nodes 
+we need this cause nodes can have different types of outputs *)
+type generic_type = 
+  | NoOutput (* For nodes with no specific output or side effects only *)
+  | IntList of int list
+  | StringList of string list
+  | FloatList of float list
+  | StringIntList of (string * int) list
+  | StringIntListList of (string * (int list)) list
+  (* Add other possible output types here *)
 
+let create_output_map () : (string, generic_type) Hashtbl.t =
+  Hashtbl.create 10 (* Adjust initial size as needed *)
 
+(* read input file: each input file is one line of space separated strings*)
+let read_input_file (path : string) : string list =
+  let ch = open_in path in
+  let s = really_input_string ch (in_channel_length ch) in
+  close_in ch;
+  String.split_on_char ' ' s
+
+let write_output_file (path : string) (inputs : generic_type list) =
+  let ch = open_out path in
+  List.iter (fun input ->
+    match input with
+    | StringList str_list ->
+      List.iter (fun str -> output_string ch str) str_list
+    | IntList int_list ->
+      List.iter (fun int -> output_string ch (string_of_int int)) int_list
+    | FloatList float_list ->
+      List.iter (fun float -> output_string ch (string_of_float float)) float_list
+    | StringIntList str_int_list ->
+      List.iter (fun (str, int) -> output_string ch (str ^ " " ^ string_of_int int)) str_int_list
+    | StringIntListList str_int_list_list ->
+      List.iter (fun (str, int_list) ->
+        List.iter (fun int -> output_string ch (str ^ " " ^ string_of_int int)) int_list
+      ) str_int_list_list
+    | _ -> failwith "Unsupported output type"
+  ) inputs;
+  close_out ch

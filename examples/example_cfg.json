@@ -19,6 +19,14 @@
         }
       },
       {
+        "id": "shuffler",
+        "type": "Computation",
+        "config": {
+          "function_name": "shuffle_word_count",
+          "threads": 1
+        }
+      },
+      {
         "id": "reducer",
         "type": "Computation",
         "config": {
