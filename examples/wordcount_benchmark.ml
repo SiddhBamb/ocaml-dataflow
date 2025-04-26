@@ -1,5 +1,5 @@
-module StringSequential = Dataflowlib.Mapreduce.MakeMapReduce (String)
-module StringParallel = Dataflowlib.Mapreduce_parallel.MakeParallelMapReduce (String)
+module StringSequential = Dataflowlib.Dataflow.MakeMapReduce (String)
+module StringParallel = Dataflowlib.Dataflow_parallel.MakeParallelMapReduce (String)
 
 let file_content =
   let ch = open_in "data/wordcountdata_large.txt" in

@@ -1,5 +1,5 @@
 (* Instantiate the functor for string keys *)
-module StringPMR = Dataflowlib.Mapreduce_parallel.MakeParallelMapReduce (String)
+module StringPMR = Dataflowlib.Dataflow_parallel.MakeParallelMapReduce (String)
 
 (* Read the input file into memory *)
 let file_content =
