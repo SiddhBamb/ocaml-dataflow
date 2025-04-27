@@ -2,3 +2,8 @@
  (name computation_filter)
  (modules computation_filter)
  (libraries nodes))
+
+(executable
+ (name shuffle_tests)
+ (modules shuffle_tests)
+ (libraries nodes dataflowlib))
