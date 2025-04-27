@@ -38,19 +38,22 @@ let test_concurrent_inserts () =
   let pool = Domainslib.Task.setup_pool ~num_domains:4 () in
   let map = ConcurrentHashMap.create () in
 
-  (* Create tasks *)
-  let tasks = List.init 10 (fun i ->
-    Domainslib.Task.async pool (fun () ->
-      for _ = 1 to 1000 do
-        ConcurrentHashMap.insert map (string_of_int i) [i]  (* Insert list for each key *)
-      done
-    )
-  ) in
+  (* Run everything inside Task.run *)
+  Domainslib.Task.run pool (fun _ ->
+    (* Create tasks *)
+    let tasks = List.init 10 (fun i ->
+      Domainslib.Task.async pool (fun () ->
+        for _ = 1 to 1000 do
+          ConcurrentHashMap.insert map (string_of_int i) [i]
+        done
+      )
+    ) in
 
-  (* Wait for all tasks to complete using List.iter *)
-  List.iter (fun task -> ignore (Domainslib.Task.await pool task)) tasks;
+    (* Wait for all tasks to complete *)
+    List.iter (fun task -> ignore (Domainslib.Task.await pool task)) tasks
+  );
 
-  (* Teardown the pool *)
+  (* After run block is done, safe to teardown *)
   Domainslib.Task.teardown_pool pool;
 
   (* Check if all keys are inserted *)
@@ -60,6 +63,63 @@ let test_concurrent_inserts () =
   else
     failwith "❌ test_concurrent_inserts failed"
 
+(* timer helper *)
+let time f =
+  let start = Unix.gettimeofday () in
+  let result = f () in
+  let finish = Unix.gettimeofday () in
+  (finish -. start, result)
+
+(* Test 6: Speedup of ConcurrentHashMap vs regular Map *)
+let test_speedup () =
+  let num_tasks = 10 in
+  let num_inserts_per_task = 1_000_000 in
+
+  (* ConcurrentHashMap test *)
+  let pool = Domainslib.Task.setup_pool ~num_domains:4 () in
+  let cmap = ConcurrentHashMap.create () in
+
+  let concurrent_time, _ = time (fun () ->
+    Domainslib.Task.run pool (fun _ ->
+      let tasks = List.init num_tasks (fun i ->
+        Domainslib.Task.async pool (fun () ->
+          for j = 1 to num_inserts_per_task do
+            ConcurrentHashMap.insert cmap (Printf.sprintf "%d-%d" i j) [i; j]
+          done
+        )
+      ) in
+      List.iter (fun task -> ignore (Domainslib.Task.await pool task)) tasks
+    )
+  ) 
+  in
+  Domainslib.Task.teardown_pool pool;
+
+  (* Regular Map test *)
+  let module M = Map.Make(String) in  (* This should be outside the 'let' block *)
+  let map = ref M.empty in
+
+  let regular_time, _ = time (fun () ->
+    let tasks = List.init num_tasks (fun i ->
+      (* Just sequential loops, no real parallelism *)
+      for j = 1 to num_inserts_per_task do
+        map := M.add (Printf.sprintf "%d-%d" i j) [i; j] !map
+      done
+    ) in
+    ignore tasks
+  ) 
+  in
+
+  (* Report results *)
+  Printf.printf "\n===== Speed Comparison =====\n";
+  Printf.printf "ConcurrentHashMap insert time: %.4f seconds\n" concurrent_time;
+  Printf.printf "Regular Map insert time: %.4f seconds\n" regular_time;
+  if concurrent_time < regular_time then
+    Printf.printf "✅ ConcurrentHashMap was faster by %.2fx\n" (regular_time /. concurrent_time)
+  else
+    Printf.printf "⚠️  ConcurrentHashMap was slower by %.2fx\n" (concurrent_time /. regular_time)
+
+
+    
 
 (* Run all tests *)
 let () =
@@ -68,3 +128,4 @@ let () =
   test_insert_delete ();
   test_overwrite_key ();
   test_concurrent_inserts ();
+  test_speedup ();
