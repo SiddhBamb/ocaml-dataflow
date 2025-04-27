@@ -30,7 +30,7 @@ let run_wordcount_new (num_domains : int) (file_path : string) =
   reduced
 ;;
 
-let sequential_average_time =
+(* let sequential_average_time =
   let result =
     Dataflowlib.Benchmark.run ~repeat:3 "[sequential] wordcount new" (fun () ->
       run_wordcount_new 0 "data/wordcountdata_large.txt")
@@ -44,6 +44,13 @@ let parallel_average_time =
       run_wordcount_new 8 "data/wordcountdata_large.txt")
   in
   List.hd result
-;;
+;; *)
 
-let () = Printf.printf "Speedup: %f x\n" (sequential_average_time /. parallel_average_time)
+let () =
+  (* Printf.printf "Speedup: %f x\n" (sequential_average_time /. parallel_average_time) *)
+  (* print results sorted by word*)
+  let sorted = List.sort (fun (word1, _) (word2, _) -> String.compare word1 word2)
+    (run_wordcount_new 8 "data/wordcountdata_medium.txt")
+  in
+  List.iter (fun (word, count) -> Printf.printf "%s: %d\n" word count) sorted
+;;

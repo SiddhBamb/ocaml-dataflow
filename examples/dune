@@ -22,3 +22,8 @@
  (name wordcount_new)
  (modules wordcount_new)
  (libraries dataflowlib nodes))
+
+(executable
+ (name kmeans)
+ (modules kmeans)
+ (libraries dataflowlib nodes))
