@@ -140,12 +140,11 @@ module CUSTOM_ConcurrentHashMap = struct
       load_factor;
     }
 
-  (* Helpers to grab the current bucket-array and its length *)
+  (* bucket array and its length helpers *)
   let get_buckets map = Atomic.get map.buckets
   let capacity map  = Array.length (get_buckets map)
 
-  (* Double-checked resize: allocate new array, migrate under per-bucket locks,
-     then atomically swap it in under resize_lock. *)
+  (* reallocate array to double size *)
   let resize_if_needed map =
     let sz  = Atomic.get map.size in
     let cap = capacity map in
