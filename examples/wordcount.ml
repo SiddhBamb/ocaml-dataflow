@@ -1,4 +1,4 @@
-module StringMapReduce = Dataflowlib.Dataflow.MakeMapReduce (String)
+module StringMapReduce = Dataflowlib.Mapreduce.MakeMapReduce (String)
 
 let file_content =
   let ch = open_in "data/wordcountdata.txt" in

@@ -1,8 +1,8 @@
 (library
  (name dataflowlib)
  (modules
-  dataflow
-  dataflow_parallel
+  mapreduce
+  mapreduce_parallel
   jsonparser
   utils
   concurrent_hashmap
