@@ -10,28 +10,40 @@ let read_input file_path =
   List.concat words_list_list
 ;;
 
-let map (input : string) : (string * int) = 
-  (input, 1)
+let map (input : string) : string * int = input, 1
+
+let reduce (input : string * int list) : string * int =
+  fst input, List.fold_left ( + ) 0 (snd input)
 ;;
 
-let reduce (input : string * int list) : string * int = 
-  (fst input, List.fold_left (+) 0 (snd input))
-;;
-
-let run_wordcount_new (file_path) = 
+let run_wordcount_new (num_domains : int) (file_path : string) =
   let input = read_input file_path in
-  let mapped = Nodes.Computation.run_computation { input = input; transform = map } in
-  let shuffled = Nodes.Groupby.run_groupby { input = mapped } in
-  let reduced = Nodes.Computation.run_computation { input = shuffled; transform = reduce } in
+  let mapped =
+    Nodes.Computation.run_computation ~num_domains { input; transform = map }
+  in
+  let shuffled = Nodes.Groupby.run_groupby ~num_domains { input = mapped } in
+  let reduced =
+    Nodes.Computation.run_computation
+      ~num_domains
+      { input = shuffled; transform = reduce }
+  in
   reduced
 ;;
 
-let get_average_time =
-  let result = Dataflowlib.Benchmark.run ~repeat:1 "wordcount new" (fun () -> run_wordcount_new "data/wordcountdata_large.txt") in
+let sequential_average_time =
+  let result =
+    Dataflowlib.Benchmark.run ~repeat:3 "[sequential] wordcount new" (fun () ->
+      run_wordcount_new 0 "data/wordcountdata_large.txt")
+  in
   List.hd result
 ;;
 
-let () =
-  let time = get_average_time in
-  Printf.printf "Time taken: %f seconds\n" time
+let parallel_average_time =
+  let result =
+    Dataflowlib.Benchmark.run ~repeat:3 "[parallel] wordcount new" (fun () ->
+      run_wordcount_new 8 "data/wordcountdata_large.txt")
+  in
+  List.hd result
 ;;
+
+let () = Printf.printf "Speedup: %f x\n" (sequential_average_time /. parallel_average_time)
