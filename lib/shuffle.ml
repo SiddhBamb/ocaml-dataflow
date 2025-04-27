@@ -111,7 +111,7 @@ let run_test () =
 (* shuffle stage in dataflow: input is a list of (key, value) pairs, output is a list of (key, list of values) pairs *)
 
 let shuffle_parallel (input : (('a * 'b) list) list) : ('a * 'b list) list =
-  let map = Concurrent_hashmap.ConcurrentHashMap.create () in
+  let map = Concurrent_hashmap.ConcurrentHashMap.create ~expected_size:10 () in
   let input_array = Array.of_list input in
   let n = Array.length input_array in
   let num_domains = n in
