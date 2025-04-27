@@ -17,3 +17,8 @@
  (name wordcount_benchmark)
  (modules wordcount_benchmark)
  (libraries dataflowlib))
+
+(executable
+ (name wordcount_new)
+ (modules wordcount_new)
+ (libraries dataflowlib nodes))
