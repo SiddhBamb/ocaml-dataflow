@@ -5,7 +5,7 @@
   dataflow_parallel
   jsonparser
   utils
-  mutex_hashmap
+  concurrent_hashmap
   benchmark
   shuffle)
  (libraries yojson domainslib unix))

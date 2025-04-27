@@ -111,7 +111,7 @@ let run_test () =
 (* shuffle stage in dataflow: input is a list of (key, value) pairs, output is a list of (key, list of values) pairs *)
 
 let shuffle_parallel (input : (('a * 'b) list) list) : ('a * 'b list) list =
-  let map = ConcurrentHashMap.create () in
+  let map = Concurrent_hashmap.ConcurrentHashMap.create () in
   let input_array = Array.of_list input in
   let n = Array.length input_array in
   let num_domains = n in
@@ -121,7 +121,7 @@ let shuffle_parallel (input : (('a * 'b) list) list) : ('a * 'b list) list =
     Task.parallel_for pool ~start:0 ~finish:(n - 1) ~body:(fun i ->
       let inner_list = input_array.(i) in
       List.iter (fun (key, value) ->
-        ConcurrentHashMap.insert map key value
+        Concurrent_hashmap.ConcurrentHashMap.insert map key value
       ) inner_list
     )
   );
@@ -129,10 +129,9 @@ let shuffle_parallel (input : (('a * 'b) list) list) : ('a * 'b list) list =
   Task.teardown_pool pool;
 
   List.map (fun key ->
-    match ConcurrentHashMap.read map key with
-    | Some values -> (key, values)
-    | None -> (key, [])
-  ) (ConcurrentHashMap.keys map)
+  let values = (Concurrent_hashmap.ConcurrentHashMap.read map key) in
+  (key, values)
+) (Concurrent_hashmap.ConcurrentHashMap.keys map)
 
 ;;
 
