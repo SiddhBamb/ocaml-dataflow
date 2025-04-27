@@ -1,0 +1,4 @@
+(executable
+ (name computation_filter)
+ (modules computation_filter)
+ (libraries nodes))
