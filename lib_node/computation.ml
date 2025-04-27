@@ -6,4 +6,4 @@ type ('a, 'b) t =
   }
 
 (** Run the node and get the outputs. *)
-let run (node : ('a, 'b) t) : 'b list = List.map node.transform node.input
+let run_computation (node : ('a, 'b) t) : 'b list = List.map node.transform node.input

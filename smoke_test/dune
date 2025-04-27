@@ -7,3 +7,8 @@
  (name shuffle_tests)
  (modules shuffle_tests)
  (libraries nodes dataflowlib))
+
+(executable
+ (name hashmap_tests)
+ (modules hashmap_tests)
+ (libraries dataflowlib))
