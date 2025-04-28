@@ -1,3 +1,22 @@
+open NodeShard
+
+module FloatListOrd : Map.OrderedType with type t = float list = struct
+  type t = float list
+
+  (* lexicographic compare: [] < _ ; element-wise Float.compare *)
+  let rec compare a b =
+    match a, b with
+    | [], [] -> 0
+    | [], _ -> -1
+    | _, [] -> 1
+    | x :: xs, y :: ys ->
+      let c = Float.compare x y in
+      if c <> 0 then c else compare xs ys
+  ;;
+end
+
+module GB = Groupby.Make (FloatListOrd)
+
 let read_input file_path =
   let file_content =
     let ch = open_in file_path in
@@ -72,27 +91,25 @@ let run_kmeans (num_domains : int) (file_path : string) (max_iterations : int)
     then current_centroids
     else (
       let mapped =
-        Nodes.Context_computation.run_computation_with_context
+        Context_computation.run
           ~num_domains
           { input = points; transform = map; context = current_centroids }
       in
-      let grouped = Nodes.Groupby.run_groupby ~num_domains { input = mapped } in
+      let grouped = GB.run ~num_domains { input = Shards.concat mapped } in
       let new_centroids =
-        Nodes.Computation.run_computation
-          ~num_domains
-          { input = grouped; transform = reduce }
+        Computation.run ~num_domains { input = Shards.concat grouped; transform = reduce }
       in
-      convergence_loop (current_iteration + 1) new_centroids)
+      convergence_loop (current_iteration + 1) (Shards.concat new_centroids))
   in
   convergence_loop 0 initial_centroids
 ;;
 
-let max_iters = 100
+let max_iters = 10
 
 let sequential_average_time =
   let result =
     Dataflowlib.Benchmark.run ~repeat:1 "[sequential] kmeans" (fun () ->
-      run_kmeans 0 "data/kmeansdata_medium.txt" max_iters)
+      run_kmeans 0 "data/kmeansdata_large.txt" max_iters)
   in
   List.hd result
 ;;
@@ -100,7 +117,7 @@ let sequential_average_time =
 let parallel_average_time =
   let result =
     Dataflowlib.Benchmark.run ~repeat:1 "[parallel] kmeans" (fun () ->
-      run_kmeans 2 "data/kmeansdata_medium.txt" max_iters)
+      run_kmeans 8 "data/kmeansdata_large.txt" max_iters)
   in
   List.hd result
 ;;

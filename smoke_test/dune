@@ -1,12 +1,12 @@
 (executable
- (name computation_filter)
- (modules computation_filter)
- (libraries nodes))
+ (name computation_filter_shards)
+ (modules computation_filter_shards)
+ (libraries nodeShard))
 
 (executable
  (name shuffle_tests)
  (modules shuffle_tests)
- (libraries nodes dataflowlib))
+ (libraries dataflowlib nodeShard))
 
 (executable
  (name hashmap_tests)
