@@ -19,11 +19,11 @@
  (libraries dataflowlib))
 
 (executable
- (name wordcount_new)
- (modules wordcount_new)
+ (name wordcount_new_shards)
+ (modules wordcount_new_shards)
  (libraries dataflowlib nodeShard))
 
 (executable
- (name kmeans)
- (modules kmeans)
+ (name kmeans_shards)
+ (modules kmeans_shards)
  (libraries dataflowlib nodeShard))

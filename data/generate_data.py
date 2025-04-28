@@ -1,6 +1,6 @@
 import random
 
-n = 1000000
+n = 10000
 d = 5
 
 # Generate the header line
@@ -16,5 +16,5 @@ for _ in range(n):
 output_content = header + "\n" + "\n".join(data_lines)
 
 # Print the content to kmeansdata_large.txt
-with open("data/kmeansdata_large.txt", "w") as f:
+with open("data/kmeansdata_medium.txt", "w") as f:
   f.write(output_content)

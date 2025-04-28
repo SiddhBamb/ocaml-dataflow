@@ -1,6 +1,6 @@
 (executable
- (name computation_filter)
- (modules computation_filter)
+ (name computation_filter_shards)
+ (modules computation_filter_shards)
  (libraries nodeShard))
 
 (executable
