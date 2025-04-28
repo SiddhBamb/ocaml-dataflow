@@ -24,6 +24,16 @@
  (libraries dataflowlib nodeShard))
 
 (executable
+ (name kmeans)
+ (modules kmeans)
+ (libraries dataflowlib nodes))
+
+(executable
+ (name matrix_factorization)
+ (modules matrix_factorization)
+ (libraries dataflowlib nodes))
+
+(executable
  (name kmeans_shards)
  (modules kmeans_shards)
  (libraries dataflowlib nodeShard))
