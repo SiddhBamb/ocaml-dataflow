@@ -28,6 +28,6 @@ let parallel n_domains node : 'b Shards.t =
   { buckets; n = n_domains }
 ;;
 
-let run_computation_with_context ?(num_domains = 4) (node : ('a, 'b, 'c) t) : 'b Shards.t =
+let run ?(num_domains = 4) (node : ('a, 'b, 'c) t) : 'b Shards.t =
   if num_domains = 0 then sequential node else parallel num_domains node
 ;;
