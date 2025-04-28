@@ -8,6 +8,7 @@ module ConcurrentHashMap : sig
   val delete : ('k, 'v) t -> 'k -> unit
   val clear : ('k, 'v) t -> unit
   val keys : ('k, 'v) t -> 'k list
+  val iter : ('k -> 'v list -> unit) -> ('k, 'v) t -> unit
 end = struct
   type ('k, 'v) node =
     { key : 'k
@@ -107,6 +108,19 @@ end = struct
          trav (Atomic.get cell))
       map.buckets;
     !acc
+  ;;
+
+  let iter f map =
+    Array.iter
+      (fun cell ->
+         let rec traverse = function
+           | None -> ()
+           | Some n ->
+             f n.key [ n.value ];
+             traverse n.next
+         in
+         traverse (Atomic.get cell))
+      map.buckets
   ;;
 end
 

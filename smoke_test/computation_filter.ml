@@ -1,15 +1,17 @@
-open Nodes.Computation
-open Nodes.Filter
+open Nodes
 
-(* Filter for even numbers *)
+(* keep only even numbers *)
 let even x = x mod 2 = 0
 
-(* Compute the square of a number *)
+(* square a number *)
 let square x = x * x
 
 let () =
-  let even_numbers_list = run_filter { input = [ 1; 2; 3; 4; 5; 6 ]; pred = even } in
-  let squared_list = run_computation { input = even_numbers_list; transform = square } in
-  List.iter (Printf.printf "%d ") squared_list;
+  let shards_even =
+    Filter.run ~num_domains:4 { input = [ 1; 2; 3; 4; 5; 6 ]; pred = even }
+  in
+  let shards_squared = Shards.map square shards_even in
+  let result = Shards.concat shards_squared in
+  List.iter (Printf.printf "%d ") result;
   print_newline ()
 ;;

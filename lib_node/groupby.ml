@@ -1,49 +1,34 @@
-open Domainslib
-open Dataflowlib
+(* groupby.ml — pure, shard-aware, no duplicates *)
+open Shards
 
-(** A polymorphic groupby node.
-    The user supplies a generic list, the result is grouped by the first
-    element of the tuple. *)
-type ('a, 'b) groupby = { input : ('a * 'b) list (** Elements to group *) }
+module Make (Ord : Map.OrderedType) = struct
+  module M = Map.Make (Ord)
 
-let groupby_sequential (input : ('a * 'b) list) : ('a * 'b list) list =
-  let map = Concurrent_hashmap.ConcurrentHashMap.create ~expected_size:10 () in
-  List.iter
-    (fun (key, value) -> Concurrent_hashmap.ConcurrentHashMap.insert map key value)
-    input;
-  let key_list = Concurrent_hashmap.ConcurrentHashMap.keys map in
-  let unique_keys = List.sort_uniq compare key_list in
-  List.map (fun key -> key, Concurrent_hashmap.ConcurrentHashMap.read map key) unique_keys
-;;
+  type ('k, 'v) t = { input : ('k * 'v) list }
 
-let groupby_parallel (num_domains : int) (input : ('a * 'b) list) : ('a * 'b list) list =
-  let partitions = Array.make num_domains [] in
-  List.iter
-    (fun (key, value) ->
-       let index = Hashtbl.hash key mod num_domains in
-       partitions.(index) <- (key, value) :: partitions.(index))
-    input;
-  let map = Concurrent_hashmap.ConcurrentHashMap.create ~expected_size:10 () in
-  let n = Array.length partitions in
-  let pool = Task.setup_pool ~num_domains () in
-  Task.run pool (fun () ->
-    Task.parallel_for pool ~start:0 ~finish:(n - 1) ~body:(fun i ->
-      (* No need to destructure, element is already the list *)
-      let inner_list = partitions.(i) in
-      List.iter
-        (fun (key, value) -> Concurrent_hashmap.ConcurrentHashMap.insert map key value)
-        inner_list));
-  Task.teardown_pool pool;
-  (* Collect the results *)
-  List.map
-    (fun key ->
-       let values = Concurrent_hashmap.ConcurrentHashMap.read map key in
-       key, values)
-    (Concurrent_hashmap.ConcurrentHashMap.keys map)
-;;
-
-let run_groupby ?(num_domains : int = 4) (node : ('a, 'b) groupby) : ('a * 'b list) list =
-  if num_domains = 0
-  then groupby_sequential node.input
-  else groupby_parallel num_domains node.input
-;;
+  let run ?(num_domains = 4) { input } : ('k * 'v list) Shards.t =
+    (* 1 ▸ build map in one pass – sequential but cache-friendly *)
+    let grouped =
+      List.fold_left
+        (fun m (k, v) ->
+           let vs =
+             match M.find_opt k m with
+             | None -> []
+             | Some l -> l
+           in
+           M.add k (v :: vs) m)
+        M.empty
+        input
+    in
+    (* 2 ▸ split result into n buckets for downstream parallelism *)
+    let n = max 1 num_domains in
+    let buckets = Array.make n [] in
+    M.iter
+      (fun k vs ->
+         let i = Stdlib.Hashtbl.hash k mod n in
+         buckets.(i) <- (k, vs) :: buckets.(i))
+      grouped;
+    Array.iteri (fun i l -> buckets.(i) <- List.rev l) buckets;
+    { buckets; n }
+  ;;
+end
