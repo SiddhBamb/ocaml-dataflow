@@ -1,4 +1,4 @@
 (library
- (name nodes)
+ (name nodeShard)
  (modules shards computation filter groupby context_computation)
  (libraries dataflowlib))

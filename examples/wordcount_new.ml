@@ -1,4 +1,4 @@
-open Nodes
+open NodeShard
 module GB = Groupby.Make (String)
 
 (* ---------- helpers -------------------------------------------------- *)

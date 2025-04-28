@@ -1,4 +1,4 @@
-open Nodes
+open NodeShard
 
 module FloatListOrd : Map.OrderedType with type t = float list = struct
   type t = float list
@@ -109,7 +109,7 @@ let max_iters = 10
 let sequential_average_time =
   let result =
     Dataflowlib.Benchmark.run ~repeat:1 "[sequential] kmeans" (fun () ->
-      run_kmeans 0 "data/kmeansdata_large.txt" max_iters)
+      run_kmeans 0 "data/kmeansdata_medium.txt" max_iters)
   in
   List.hd result
 ;;
@@ -117,7 +117,7 @@ let sequential_average_time =
 let parallel_average_time =
   let result =
     Dataflowlib.Benchmark.run ~repeat:1 "[parallel] kmeans" (fun () ->
-      run_kmeans 8 "data/kmeansdata_large.txt" max_iters)
+      run_kmeans 8 "data/kmeansdata_medium.txt" max_iters)
   in
   List.hd result
 ;;

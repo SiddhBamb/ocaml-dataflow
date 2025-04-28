@@ -21,9 +21,9 @@
 (executable
  (name wordcount_new)
  (modules wordcount_new)
- (libraries dataflowlib nodes))
+ (libraries dataflowlib nodeShard))
 
 (executable
  (name kmeans)
  (modules kmeans)
- (libraries dataflowlib nodes))
+ (libraries dataflowlib nodeShard))
