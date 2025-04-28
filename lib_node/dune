@@ -1,4 +1,4 @@
 (library
  (name nodes)
  (modules computation filter groupby)
- (libraries dataflowlib))
+ (libraries domainslib utilslib))

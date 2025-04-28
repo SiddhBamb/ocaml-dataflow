@@ -19,8 +19,9 @@
 
     Dataflowlib.Utils.StringIntList word_counts_list
 *)
+open Utilslib
 
 let () =
   let graph = Dataflowlib.Jsonparser.json_to_graph "examples/example_cfg.json" in
-  Dataflowlib.Utils.print_graph graph
+  Utils.print_graph graph
 ;;

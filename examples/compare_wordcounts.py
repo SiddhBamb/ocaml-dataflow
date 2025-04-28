@@ -4,8 +4,8 @@ def compare_wordcounts(counts1, counts2):
     with open(counts1, 'r') as f1, open(counts2, 'r') as f2:
         words1 = f1.readlines()
         words2 = f2.readlines()
-        a1 = words1.strip().split(":")
-        a2 = words2.strip().split(":")
+        a1 = [w.strip().split(":") for w in words1]
+        a2 = [w.strip().split(":") for w in words2]
         c1 = {x[0]: x[1] for x in a2}
         c2 = {x[0]: x[1] for x in a1}
         return c1 == c2

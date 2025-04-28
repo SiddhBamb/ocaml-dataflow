@@ -1,4 +1,4 @@
-open Dataflowlib.Concurrent_hashmap
+open Utilslib.Concurrent_hashmap
 open Domainslib
 
 (* test 1: basic insertion and read *)

@@ -1,0 +1,5 @@
+(library
+ (name utilslib)
+ (modules
+  utils
+  concurrent_hashmap))

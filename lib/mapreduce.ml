@@ -1,3 +1,5 @@
+open Utilslib
+
 type 'a input_chunk = 'a list
 
 (* like template in c++, we can make mapreduce for any key type *)
@@ -96,7 +98,7 @@ let accumulate_same_type_generic_inputs (inputs : Utils.generic_type list)
           | _ -> None)
         inputs
     in
-    Utils.IntList (List.concat all_int_lists)
+    IntList (List.concat all_int_lists)
   | Utils.FloatList _ :: _ ->
     let all_float_lists =
       List.filter_map

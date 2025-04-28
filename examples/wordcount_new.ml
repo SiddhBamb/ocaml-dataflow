@@ -33,7 +33,7 @@ let run_wordcount_new (num_domains : int) (file_path : string) =
 let sequential_average_time =
   let result =
     Dataflowlib.Benchmark.run ~repeat:3 "[sequential] wordcount new" (fun () ->
-      run_wordcount_new 0 "data/wordcountdata_large.txt")
+      run_wordcount_new 0 "data/wordcountdata_medium.txt")
   in
   List.hd result
 ;;
@@ -41,7 +41,7 @@ let sequential_average_time =
 let parallel_average_time =
   let result =
     Dataflowlib.Benchmark.run ~repeat:3 "[parallel] wordcount new" (fun () ->
-      run_wordcount_new 8 "data/wordcountdata_large.txt")
+      run_wordcount_new 8 "data/wordcountdata_medium.txt")
   in
   List.hd result
 ;;

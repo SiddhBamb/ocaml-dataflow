@@ -4,8 +4,6 @@
   mapreduce
   mapreduce_parallel
   jsonparser
-  utils
-  concurrent_hashmap
   benchmark
   shuffle)
- (libraries yojson domainslib unix))
+ (libraries yojson domainslib unix utilslib))

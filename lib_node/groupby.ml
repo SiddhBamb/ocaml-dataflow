@@ -1,5 +1,5 @@
 open Domainslib
-open Dataflowlib
+open Utilslib
 
 (** A polymorphic groupby node.
     The user supplies a generic list, the result is grouped by the first

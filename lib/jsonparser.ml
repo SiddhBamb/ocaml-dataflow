@@ -1,3 +1,5 @@
+open Utilslib
+
 (** Parse JSON file into a Yojson.Basic.t. *)
 let parse_json_file (filename : string) : Yojson.Basic.t =
   let ch = open_in filename in

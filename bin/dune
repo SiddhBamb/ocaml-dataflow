@@ -1,4 +1,3 @@
 (executable
  (name main)
- (modules main)
- (libraries dataflowlib))
+ (libraries domainslib yojson dataflowlib fault_tolerance))

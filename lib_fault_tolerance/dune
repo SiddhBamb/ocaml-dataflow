@@ -1,0 +1,4 @@
+(library
+ (name fault_tolerance)
+ (libraries domainslib yojson dataflowlib nodes utilslib unix threads)
+ (modules master worker fault_tolerance_demo fault_tolerance_demo_realistic)) 

@@ -1,4 +1,5 @@
 open Domainslib
+open Utilslib
 
 let shuffle_parallel (input : ('a * 'b) list list) : ('a * 'b list) list =
   let map = Concurrent_hashmap.ConcurrentHashMap.create ~expected_size:10 () in

@@ -110,8 +110,9 @@ end = struct
   ;;
 end
 
-(* This one is kind of slow *)
-(* Doesn't use CAS, instead is lock-based *)
+
+(* this impl is kind of slow *)
+(* doesn't use CAS, instead is lock-based *)
 module CUSTOM_ConcurrentHashMap = struct
   (* A single bucket: a mutex + a mutable chain of (key * vs list) *)
   type ('k, 'v) bucket =
@@ -126,8 +127,7 @@ module CUSTOM_ConcurrentHashMap = struct
     ; load_factor : float
     }
 
-  (* Create with an initial capacity large enough to hold ~expected_size
-     at the given load_factor, so you never have to resize. *)
+  (* create hashmap with initial capacity (to avoid excessive resizing) *)
   let create ?(expected_size = 1000) ?(load_factor = 0.9) () =
     let cap = max 16 (int_of_float (float expected_size /. load_factor)) in
     let make_bucket () = { mutex = Mutex.create (); chain = [] } in
