@@ -146,7 +146,7 @@ let run_matrix_factorization (num_domains : int) (file_path : string)
 let sequential_average_time =
   let result =
     Dataflowlib.Benchmark.run ~repeat:1 "[sequential] matrix factorization" (fun () ->
-      run_matrix_factorization 0 "data/ratings_upper_medium.txt")
+      run_matrix_factorization 1 "data/ratings_upper_medium.txt")
   in
   List.hd result
 ;;

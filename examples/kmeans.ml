@@ -86,12 +86,12 @@ let run_kmeans (num_domains : int) (file_path : string) (max_iterations : int)
   convergence_loop 0 initial_centroids
 ;;
 
-let max_iters = 10
+let max_iters = 1000
 
 let sequential_average_time =
   let result =
     Dataflowlib.Benchmark.run ~repeat:1 "[sequential] kmeans" (fun () ->
-      run_kmeans 0 "data/kmeansdata_large.txt" max_iters)
+      run_kmeans 0 "data/kmeansdata_medium.txt" max_iters)
   in
   List.hd result
 ;;
@@ -99,7 +99,7 @@ let sequential_average_time =
 let parallel_average_time =
   let result =
     Dataflowlib.Benchmark.run ~repeat:1 "[parallel] kmeans" (fun () ->
-      run_kmeans 8 "data/kmeansdata_large.txt" max_iters)
+      run_kmeans 8 "data/kmeansdata_medium.txt" max_iters)
   in
   List.hd result
 ;;
