@@ -117,11 +117,9 @@ type generic_type =
   | StringIntListList of (string * int list) list
 (* Add other possible output types here *)
 
-let create_output_map () : (string, generic_type) Hashtbl.t =
-  Hashtbl.create 10 (* Adjust initial size as needed *)
-;;
+let create_output_map () : (string, generic_type) Hashtbl.t = Hashtbl.create 10
 
-(* read input file: each input file is one line of space separated strings*)
+(* read input file: each input file is one line of space separated strings *)
 let read_input_file (path : string) : string list =
   let ch = open_in path in
   let s = really_input_string ch (in_channel_length ch) in

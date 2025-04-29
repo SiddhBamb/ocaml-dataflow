@@ -50,7 +50,6 @@ let reduce (input : float list * float list list) : float list =
     let sum_points_arr : float array =
       List.fold_left
         (fun acc_arr point_list ->
-           (* Ensure point_list has dimension d, add error handling if needed *)
            Array.mapi (fun i acc_val -> acc_val +. List.nth point_list i) acc_arr)
         (Array.make d 0.0)
         points

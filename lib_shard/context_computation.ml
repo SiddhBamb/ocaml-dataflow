@@ -3,9 +3,9 @@ open Shards
 
 (** A computation that needs an immutable context. *)
 type ('a, 'b, 'c) t =
-  { input : 'a list (** elements to process            *)
-  ; transform : 'a -> 'c -> 'b (** user-supplied transformation   *)
-  ; context : 'c (** immutable context              *)
+  { input : 'a list (** elements to process *)
+  ; transform : 'a -> 'c -> 'b (** user-supplied transformation *)
+  ; context : 'c (** immutable context *)
   }
 
 let sequential node : 'b Shards.t =

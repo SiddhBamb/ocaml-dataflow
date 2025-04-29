@@ -3,7 +3,6 @@ open NodeShard
 module FloatListOrd : Map.OrderedType with type t = float list = struct
   type t = float list
 
-  (* lexicographic compare: [] < _ ; element-wise Float.compare *)
   let rec compare a b =
     match a, b with
     | [], [] -> 0
@@ -44,7 +43,7 @@ let rec take k lst =
 
 (* input: list of points, context: list of centroids, return: centroid index to the point *)
 let map (point : float list) (context : float list list) : float list * float list =
-  (* iterate through points and find closest centroid*)
+  (* iterate through points and find closest centroid *)
   let _, closest_centroid =
     List.fold_left
       (fun (min_d, min_c) centroid ->
@@ -69,7 +68,6 @@ let reduce (input : float list * float list list) : float list =
     let sum_points_arr : float array =
       List.fold_left
         (fun acc_arr point_list ->
-           (* Ensure point_list has dimension d, add error handling if needed *)
            Array.mapi (fun i acc_val -> acc_val +. List.nth point_list i) acc_arr)
         (Array.make d 0.0)
         points

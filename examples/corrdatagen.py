@@ -6,7 +6,7 @@ NUM_USERS = 4000
 USERNAME_LEN = 6
 NUM_ITEMS = 1000
 RATINGS_PER_USER = 15              # 1000 * 10 = 10000
-K = 8                               # latent factor dimension
+K = 8                              # latent factor dimension
 NOISE_STD = 0.5
 RNG = np.random.default_rng(seed=42)
 

@@ -1,7 +1,7 @@
 open Dataflowlib.Concurrent_hashmap
 open Domainslib
 
-(* test 1: basic insertion and read *)
+(* Test 1: basic insertion and read *)
 let test_basic_insert_read () =
   let map = ConcurrentHashMap.create () in
   ConcurrentHashMap.insert map "hello" [ 1 ];
@@ -11,7 +11,7 @@ let test_basic_insert_read () =
   | _ -> failwith "FAIL test_basic_insert_read failed"
 ;;
 
-(* test 2: read missing key returns empty list *)
+(* Test 2: read missing key returns empty list *)
 let test_read_missing_key () =
   let map = ConcurrentHashMap.create () in
   match ConcurrentHashMap.read map "world" with
@@ -19,7 +19,7 @@ let test_read_missing_key () =
   | _ -> failwith "FAIL test_read_missing_key failed"
 ;;
 
-(* test 3: insert then delete *)
+(* Test 3: insert then delete *)
 let test_insert_delete () =
   let map = ConcurrentHashMap.create () in
   ConcurrentHashMap.insert map "key" 42;
@@ -31,7 +31,7 @@ let test_insert_delete () =
   | _ -> failwith "FAIL test_insert_delete failed"
 ;;
 
-(* test 4: appending to the same list *)
+(* Test 4: appending to the same list *)
 let test_overwrite_key () =
   let map = ConcurrentHashMap.create () in
   ConcurrentHashMap.insert map "dup" 1;
@@ -50,7 +50,7 @@ let test_overwrite_key () =
     failwith "FAIL test_overwrite_key failed"
 ;;
 
-(* test 5: correctness of concurrent inserts *)
+(* Test 5: correctness of concurrent inserts *)
 let test_concurrent_inserts () =
   let pool = Domainslib.Task.setup_pool ~num_domains:4 () in
   let map = ConcurrentHashMap.create () in
@@ -62,10 +62,10 @@ let test_concurrent_inserts () =
             ConcurrentHashMap.insert map (string_of_int i) [ i ]
           done))
     in
-    (* join all threads *)
+    (* Join all threads *)
     List.iter (fun task -> ignore (Domainslib.Task.await pool task)) tasks);
   Domainslib.Task.teardown_pool pool;
-  (* check for correctness *)
+  (* Check for correctness *)
   let all_keys = ConcurrentHashMap.keys map in
   if
     List.length all_keys = 10
@@ -76,7 +76,7 @@ let test_concurrent_inserts () =
   else failwith "FAIL test_concurrent_inserts failed"
 ;;
 
-(* timer helper *)
+(* Timer helper *)
 let time f =
   let start = Unix.gettimeofday () in
   let result = f () in
@@ -84,7 +84,7 @@ let time f =
   finish -. start, result
 ;;
 
-(* test 6: speedup of ConcurrentHashMap vs regular Map *)
+(* Test 6: speedup of ConcurrentHashMap vs regular Map *)
 let test_speedup () =
   let num_tasks = 10 in
   let num_inserts_per_task = 100_000 in
@@ -120,7 +120,7 @@ let test_speedup () =
         List.iter (fun task -> ignore (Domainslib.Task.await pool task)) tasks))
   in
   Domainslib.Task.teardown_pool pool;
-  (* regular map test *)
+  (* Regular map test *)
   let module M = Map.Make (Int) in
   let map = ref M.empty in
   let regular_time, _ =
@@ -133,7 +133,7 @@ let test_speedup () =
       in
       ignore tasks)
   in
-  (* report timing results *)
+  (* Report timing results *)
   Printf.printf "\n===== Timing Results =====\n";
   Printf.printf "ConcurrentHashMap insert time: %.4f seconds\n" concurrent_time;
   Printf.printf
@@ -147,7 +147,7 @@ let test_speedup () =
       (regular_time /. concurrent_time)
   else
     Printf.printf
-      "⚠️  ConcurrentHashMap was slower by %.2fx\n"
+      " ConcurrentHashMap was slower by %.2fx\n"
       (concurrent_time /. regular_time)
 ;;
 
@@ -155,7 +155,7 @@ let test_compare () =
   let num_tasks = 8 in
   let num_inserts_per_task = 1_000_000 in
   let total = num_tasks * num_inserts_per_task in
-  (* time single-threaded ConcurrentHashMap *)
+  (* Time single-threaded ConcurrentHashMap *)
   let chm_single_time, () =
     time (fun () ->
       let cmap = ConcurrentHashMap.create ~expected_size:total () in
@@ -163,7 +163,7 @@ let test_compare () =
         ConcurrentHashMap.insert cmap i i
       done)
   in
-  (* time single-threaded hashtable *)
+  (* Time single-threaded hashtable *)
   let ht_single_time, () =
     time (fun () ->
       let ht = Hashtbl.create total in
@@ -171,7 +171,7 @@ let test_compare () =
         Hashtbl.add ht i i
       done)
   in
-  (* time multi-threaded ConcurrentHashMap *)
+  (* Time multi-threaded ConcurrentHashMap *)
   let pool = Task.setup_pool ~num_domains:8 () in
   let chm_multi_time, () =
     time (fun () ->
@@ -189,7 +189,7 @@ let test_compare () =
         List.iter (fun tsk -> ignore (Task.await pool tsk)) tasks))
   in
   Task.teardown_pool pool;
-  (* report timing results *)
+  (* Report timing results *)
   Printf.printf "\n===== Timing Results =====\n";
   Printf.printf "1) Single-thread CHM:     %.4f s\n" chm_single_time;
   Printf.printf "2) Single-thread Hashtbl: %.4f s\n" ht_single_time;
@@ -199,7 +199,7 @@ let test_compare () =
   Printf.printf "\n%!"
 ;;
 
-(* run all tests *)
+(* Run all tests *)
 let () =
   test_basic_insert_read ();
   test_read_missing_key ();

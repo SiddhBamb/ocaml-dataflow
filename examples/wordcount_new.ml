@@ -49,8 +49,10 @@ let parallel_average_time =
 let () =
   (* Printf.printf "Speedup: %f x\n" (sequential_average_time /. parallel_average_time) *)
   (* print results sorted by word*)
-  let sorted = List.sort (fun (word1, _) (word2, _) -> String.compare word1 word2)
-    (run_wordcount_new 8 "data/wordcountdata_medium.txt")
+  let sorted =
+    List.sort
+      (fun (word1, _) (word2, _) -> String.compare word1 word2)
+      (run_wordcount_new 8 "data/wordcountdata_medium.txt")
   in
   List.iter (fun (word, count) -> Printf.printf "%s: %d\n" word count) sorted
 ;;

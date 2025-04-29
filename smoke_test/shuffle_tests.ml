@@ -1,7 +1,5 @@
-(* test Dataflowlib.Shuffle.shuffle_parallel *)
-
 let () =
-  (* create input list size 100 *)
+  (* Create input list size 100 *)
   let input =
     [ [ "a", 1; "b", 2; "c", 3 ]
     ; [ "a", 4; "b", 5; "c", 6 ]

@@ -18,8 +18,3 @@ if __name__ == "__main__":
     
     for word, count in sorted(counts.items()):
         print(f"{word}: {count}")
-    
-
-    
-    
-

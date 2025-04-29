@@ -1,9 +1,9 @@
 open NodeShard
 
-(* keep only even numbers *)
+(* Keep only even numbers *)
 let even x = x mod 2 = 0
 
-(* square a number *)
+(* Square a number *)
 let square x = x * x
 
 let () =

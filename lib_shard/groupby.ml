@@ -1,4 +1,3 @@
-(* groupby.ml — pure, shard-aware, no duplicates *)
 open Shards
 
 module Make (Ord : Map.OrderedType) = struct
@@ -7,7 +6,6 @@ module Make (Ord : Map.OrderedType) = struct
   type ('k, 'v) t = { input : ('k * 'v) list }
 
   let run ?(num_domains = 4) { input } : ('k * 'v list) Shards.t =
-    (* 1 ▸ build map in one pass – sequential but cache-friendly *)
     let grouped =
       List.fold_left
         (fun m (k, v) ->
@@ -20,7 +18,6 @@ module Make (Ord : Map.OrderedType) = struct
         M.empty
         input
     in
-    (* 2 ▸ split result into n buckets for downstream parallelism *)
     let n = max 1 num_domains in
     let buckets = Array.make n [] in
     M.iter

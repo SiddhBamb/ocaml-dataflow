@@ -21,7 +21,7 @@ let map f s = { s with buckets = Array.map (List.map f) s.buckets }
 let filter p s = { s with buckets = Array.map (List.filter p) s.buckets }
 let concat s = List.concat (Array.to_list s.buckets)
 
-(* rebucket when the next stage wants a different degree of parallelism *)
+(* Re-bucket when the next stage wants a different degree of parallelism *)
 let rebucket ~n_new ({ buckets; _ } as s) =
   if n_new = s.n
   then s

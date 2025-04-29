@@ -1,11 +1,8 @@
 type 'a input_chunk = 'a list
 
-(* like template in c++, we can make mapreduce for any key type *)
 module MakeMapReduce (Key : Map.OrderedType) = struct
   module KMap = Map.Make (Key)
 
-  (* map: takes list of input chunks, makes it into a map for each chunk *)
-  (* in word count example: takes list of lines, makes map from word to count *)
   let map_task_runner
         (input_chunks : 'a input_chunk list)
         (map_func : 'a input_chunk -> 'v KMap.t)
@@ -166,14 +163,13 @@ module Dataflow = struct
               relevant_edges
           in
           Utils.write_output_file path inputs)
-        (* Optional: Add an else case to handle unexpected modes *)
         else failwith ("Unknown FileIO mode: " ^ mode)
       | Utils.Computation ->
         (* iterate through all edges, collect inputs from global_output_map where edge.dst = node.id *)
         let relevant_edges =
           List.filter (fun (edge : Utils.edge) -> edge.to_id = node.id) graph.edges
         in
-        (*list of generic_type inputs*)
+        (* list of generic_type inputs*)
         let inputs =
           List.map
             (fun (edge : Utils.edge) -> Hashtbl.find global_output_map edge.from_id)
@@ -181,7 +177,6 @@ module Dataflow = struct
         in
         (* accumulate inputs into a single list*)
         let accumulated_inputs = accumulate_same_type_generic_inputs inputs in
-        (* TODO: parallelize. get num threads, split inputs into num threads lists, apply function to each list in parallel *)
         let func_name = get_option_exn "function_name" node.config.function_name in
         (* apply function *)
         let func = Hashtbl.find functions func_name in
