@@ -1,10 +1,10 @@
 open Nodes.Computation
 open Nodes.Filter
 
-(* Filter for even numbers *)
+(* filter on even *)
 let even x = x mod 2 = 0
 
-(* Compute the square of a number *)
+(* compute square *)
 let square x = x * x
 
 let () =

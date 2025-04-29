@@ -21,6 +21,7 @@ end = struct
     }
 
   (* make sizes always a power of 2 (since amortization stuff is 2xing cap) *)
+  (* lets us easily decide which bucket something goes in using bitwise operators *)
   let round_pow2 x =
     let x = x - 1 in
     let x = x lor (x lsr 1) in
@@ -149,7 +150,7 @@ module CUSTOM_ConcurrentHashMap = struct
     if float sz /. float cap > map.load_factor
     then (
       Mutex.lock map.resize_lock;
-      (* Re-check to avoid redundant grows *)
+      (* avoid redundant grows *)
       let sz2 = Atomic.get map.size in
       let cap2 = capacity map in
       if cap2 = cap && float sz2 /. float cap2 > map.load_factor
@@ -158,7 +159,7 @@ module CUSTOM_ConcurrentHashMap = struct
         let new_cap = cap2 * 2 in
         let make_bucket () = { mutex = Mutex.create (); chain = [] } in
         let newb = Array.init new_cap (fun _ -> make_bucket ()) in
-        (* Migrate each old bucket under its own lock *)
+        (* migrate old bucket to new one after locking its bucket *)
         Array.iter
           (fun bkt ->
              Mutex.lock bkt.mutex;
@@ -170,7 +171,7 @@ module CUSTOM_ConcurrentHashMap = struct
                bkt.chain;
              Mutex.unlock bkt.mutex)
           old;
-        (* Swap buckets in one atomic write *)
+        (* swap the buckets under the lock *)
         Atomic.set map.buckets newb);
       Mutex.unlock map.resize_lock)
   ;;

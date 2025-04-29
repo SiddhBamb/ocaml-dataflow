@@ -1,6 +1,6 @@
 open Utilslib
 
-(** Parse JSON file into a Yojson.Basic.t. *)
+(** parse json into Yojson object *)
 let parse_json_file (filename : string) : Yojson.Basic.t =
   let ch = open_in filename in
   let json_str = really_input_string ch (in_channel_length ch) in
@@ -57,7 +57,7 @@ let json_edge_to_edge (json_edge : Yojson.Basic.t) : Utils.edge =
   { from_id; to_id }
 ;;
 
-(** Convert JSON string to graph. *)
+(* convert json to graph *)
 let json_to_graph (filename : string) : Utils.graph =
   let json_str = parse_json_file filename in
   let job_name =

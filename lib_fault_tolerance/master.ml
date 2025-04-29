@@ -326,14 +326,13 @@ let start_background_monitor state check_interval =
   if not state.monitor_running then begin
     state.monitor_running <- true;
     
-    (* start monitoring thread *)
+    (* start monitoring thread, checks if workers are alive *)
     let monitoring_thread = Thread.create (fun () ->
       while state.monitor_running do
-        (* check if workers are alive *)
         (* monitor_workers_realistic state; *)
         monitor_workers state;
         
-        (* sleep for interval, usually 200ms *)
+        (* sleep until next check *)
         Thread.delay check_interval;
       done;
     ) () in

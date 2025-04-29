@@ -7,7 +7,6 @@ module MakeMapReduce (Key : Map.OrderedType) = struct
   module KMap = Map.Make (Key)
 
   (* map: takes list of input chunks, makes it into a map for each chunk *)
-  (* in word count example: takes list of lines, makes map from word to count *)
   let map_task_runner
         (input_chunks : 'a input_chunk list)
         (map_func : 'a input_chunk -> 'v KMap.t)
@@ -16,10 +15,7 @@ module MakeMapReduce (Key : Map.OrderedType) = struct
     List.map map_func input_chunks
   ;;
 
-  (** Takes all the different maps from each map task, merges into single map
-      from the list of values w that map to each key.
-      In word count example: takes map from word to count for each line, merges
-      into single map from word to list of counts. *)
+  (* take diff maps from each map task and merge into a multimap from key -> list of values for that key *)
   let shuffle_task_runner (maps : 'v KMap.t list) : 'v list KMap.t =
     let init_map : 'v list KMap.t = KMap.empty in
     let merge_fun (_key : Key.t) (list_opt : 'v list option) (v_opt : 'v option)
@@ -168,14 +164,14 @@ module Dataflow = struct
               relevant_edges
           in
           Utils.write_output_file path inputs)
-        (* Optional: Add an else case to handle unexpected modes *)
+        (* this node doesn't exist *)
         else failwith ("Unknown FileIO mode: " ^ mode)
       | Utils.Computation ->
         (* iterate through all edges, collect inputs from global_output_map where edge.dst = node.id *)
         let relevant_edges =
           List.filter (fun (edge : Utils.edge) -> edge.to_id = node.id) graph.edges
         in
-        (*list of generic_type inputs*)
+        (* list of generic_type input *)
         let inputs =
           List.map
             (fun (edge : Utils.edge) -> Hashtbl.find global_output_map edge.from_id)
