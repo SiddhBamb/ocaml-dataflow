@@ -10,7 +10,7 @@ Run `dune build` at the root level.
 
 Run
 
-- `dune exec ./bin/main.exe` for main.
+- `dune exec ./bin/main.exe` for main: this runs the fault tolerance demo.
 - `dune exec ./examples/wordcount_benchmark.exe` for wordcount benchmark.
 - `dune exec ./examples/wordcount.exe` for sequential wordcount.
 - `dune exec ./examples/wordcount_parallel.exe` for parallel wordcount.
